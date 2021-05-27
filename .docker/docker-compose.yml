@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  ######## API ########
+  chat-api:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    command: "/usr/local/bin/start"
+    working_dir: /var/www/app  
+    volumes:
+      - ../:/var/www/app:cached
+    ports:
+      - 8080:8080
+
+  ######## REDIS ########
+  chat-redis:
+    image: redis:6.0.6
+    volumes:
+      - ~/.docker-storage/chat-redis:/data
+    ports:
+      - 6379:6379
+
+  ######## POSTGRES ########
+  chat-postgres:
+    image: postgres:13.0-alpine
+    environment:
+      POSTGRES_DB: chat-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - ~/.docker-storage/chat-postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
